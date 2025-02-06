@@ -1,15 +1,20 @@
+import random
 import discord
+import subprocess
+import os
+import sys
+from datetime import datetime
 from discord import app_commands
 from discord.ext import commands
 from functools import wraps
-import random
 
 ## Developer IDs ##
-devs = {1239123901239102380129381}       ## Replace with all the discord ids of bot Admins
+devs = {1268070879598870601, 1331452332688543815}  ## Replace with all the discord ids of bot Admins
 ###################
 
 def is_dev():
     """Decorator to restrict commands to developers."""
+
     def predicate(func):
         @wraps(func)
         async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
@@ -18,19 +23,22 @@ def is_dev():
             await interaction.response.send_message(
                 "This command is restricted to developers.", ephemeral=True
             )
+
         return wrapper
+
     return predicate
 
 
-class quotes(commands.Cog):
+class SanvikaQuote(commands.Cog):
+    """Cog for managing system-level commands like restarting and updating the bot."""
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.devs = devs
 
-
-
-    @app_commands.command(name="quote", description="The quote command")
-    async def on_message(devs, interaction: discord.Interaction):
+    @app_commands.command(name="sanvika", description="gives a weird ass quote that sanvika said at some point.")
+    @is_dev()
+    async def sanvika_quote(self, interaction: discord.Interaction):
         quotes = ['"ima bust all over tavisha" - Sanvika 2025',
                   '"ima kidnap you and take you to china" - Sanvika 2025',
                   '"the only people allowed to touch you are yizhi and me" - Sanvika 2025',
@@ -47,12 +55,9 @@ class quotes(commands.Cog):
                   ]
 
         quote = random.choice(quotes)
-
         await interaction.response.send_message(quote)
 
 
-
-
-
 async def setup(bot: commands.Bot):
-    await bot.add_cog(quotes(bot))
+    """Adds the Updater cog to the bot."""
+    await bot.add_cog(SanvikaQuote(bot))
