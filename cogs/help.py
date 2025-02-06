@@ -9,7 +9,7 @@ class Help(commands.Cog):
 
     @app_commands.command(name="help", description="The help command")
     async def cmdname(self, interaction: discord.Interaction):
-        await interaction.response.send_message("help:\n\b                    Commands for Sigma Bot:\n/help = launches the help menu\n/guess = starts a game where you need to try and guess a number from 1 - 10\n\b                    Features of Sigma bot:\nWhen a message is deleted, it shows what that message is\nWhen a message is editied, it shows what that message was and what it changed to")
+        await interaction.response.send_message("help:\n\b                    Commands for Sigma Bot:\n/help = launches the help menu\n/guess = starts a game where you need to try and guess a number from 1 - 10\n/quotes = Gives a famous quote said by some famous person\n                    Features of Sigma bot:\nWhen a message is deleted, it shows what that message is\nWhen a message is editied, it shows what that message was and what it changed to")
 
 
 async def setup(bot: commands.Bot):

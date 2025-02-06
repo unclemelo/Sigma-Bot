@@ -21,7 +21,7 @@ def is_dev():
             if interaction.user.id in self.devs:
                 return await func(self, interaction, *args, **kwargs)
             await interaction.response.send_message(
-                "This command is restricted to developers.", ephemeral=True
+                "This command is restricted to certain people.", ephemeral=True
             )
 
         return wrapper
@@ -51,7 +51,10 @@ class SanvikaQuote(commands.Cog):
                   '"i bet u cum when u see yizhi" - Sanvika 2025',
                   '"plus im alr hard and i cant be both at the same time yk" - Sanvika 2025',
                   '"i know your obsessed with both bjs and blackjack" - Sanvika 2025',
-                  '"yeah nuts for life bro" - Sanvika 2025'
+                  '"yeah nuts for life bro" - Sanvika 2025',
+                  '"bet it was yizhis cream" - Sanvika 2025',
+                  '"yeahh I CAN GET HARD GUYS😍" - Sanvika 2025',
+                  '"i get hard at the sight of little kids" - Sanvika 2025'
                   ]
 
         quote = random.choice(quotes)
