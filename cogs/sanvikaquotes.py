@@ -1,12 +1,8 @@
 import random
 import discord
-import subprocess
-import os
-import sys
-from datetime import datetime
 from discord import app_commands
-from discord.ext import commands
 from functools import wraps
+from discord.ext import commands
 
 ## Developer IDs ##
 devs = {1268070879598870601, 1331452332688543815}  ## Replace with all the discord ids of bot Admins
