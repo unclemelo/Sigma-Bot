@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import Button, View
 
 class AsciiGroup(app_commands.Group):
     def __init__(self):
@@ -30,236 +29,76 @@ class AsciiGroup(app_commands.Group):
             ascii_art = """\
 ――――――▄▌▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌――-- ▄▄██▌█ BEEP BEEP ―――――― ▄▄▄▌▐██▌█ -20rr delivery ███████▌█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌▀(@)▀▀▀▀▀(@)(@)▀▀▀▀▀▀▀(@)(@)▀▀▘
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
-
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "uninstall":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░UNINSTALLING░VALORANT░░░░░░░░░░░░░▇▇▇▇▇▇▇▇▇▇▇▇▇▇▢░░░░░░░░░░░░░╭━╮╭━╮╭╮░╱░░░░░░░░░░░░░░░░╰━┫╰━┫╰╯╱╭╮░░░░░░░░░░░░░░░╰━╯╰━╯░╱░╰╯░░░░░░░░░░░░░░░░░COMPLETE░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
-
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "middlefinger":
             ascii_art = """\
 ▒▒▒▒▒▒▒▒▒▒▒▒▒█████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒███████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒██▀▀█████▀▀██▒▒▒▒▒▒▒▒▒▒▒▒█████▄███▄█████▒▒▒▒▒█▒▒▒▒▐██░░░█████░░░██▌▒▒▒▒█▒▒▒▒▐██■░░█████■░░██▌▒▒▒▒█▒▒▒▒▐███████████████▌▒▒▒███▒▒▒▐███████████████▌▒▒▐███▒▒▒▐████▀▀▀▀▀▀▀████▌▒▒▐███▌▒▒▐███▌■■■■■■■▐███▌▒▒▒███▌▒▒▒███▌■■■■■■■▐███▒▒▒▒▒█████▌▒███▄▄▄▄▄▄▄███▒▒▒▒▒▒▒█████▒▒███████████▒▒▒
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
-
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "nerd":
             ascii_art = """\
 ────────────████████────── ───────────██████████───── ──────────█▄▄▄████▄▄▄█──── ─────▄───█░░░░░██░░░░░█─── ─────█──░░░▓■▓░░░░▓■▓░░░── ─────█──▐█░▓▓▓░██░▓▓▓░█▌── ─────█──▐██░░░████░░░██▌── ─────█──▐█▛██████████▛█▌── ──▌▌▌▄▄──██▚████████▞██─── ──▌▌▌▀█──████▀████▀████─── ──▄▄▄██───████▄■■▄████──── ──▜███▛────██████████───── ───███──────████████──────
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
-
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "dontshoot":
             ascii_art = """\
 ────────────────────────────────────██████────────────▐──────██▀██▀██──────▌───▐▐▐────█▄▄████▄▄█────▌▌▌─▐▐▐▐───▐█░■░██░■░█▌───▌▌▌▌▐███─▄▌▐█░░░██░░░█▌▐▄─███▌▐████▀─▐██████████▌─▀████▌▐███───▐██████████▌───███▌─███───▐████──████▌───███─────────████──████─────────────────████████───────────────────▀▀▀▀▀▀────────────────────────────────────
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "nice":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▄░█░▀█▀░█▀▀░█▀▀░█░░░░░░░░█░▀█░░█░░█░░░█▀▀░▀░░░░░░░░▀░░▀░▀▀▀░▀▀▀░▀▀▀░▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "ggwp":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀▀░█▀▀▀░█▐▌█░█▀█░░░░░░░░█░▀█░█░▀█░█▐▌█░█▀▀░░░░░░░░▀▀▀▀░▀▀▀▀░░▀▀░░▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "banhammer":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░▄████▄░░░░░░░░░░░░░░░░░░░░██████▄░░░░░░▄▄▄░░░░░░░░░░░███▀▀▀▄▄▄▀▀▀░░░░░░░░░░░░░░░░▄▀▀▀▄░░░█▀▀▄░▄▀▀▄░█▄░█░░░░▄▄████░░█▀▀▄░█▄▄█░█▀▄█░░░░░██████░█▄▄▀░█░░█░█░▀█░░░░░░▀▀▀▀░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "afk":
             ascii_art = """\
 ░░█████╗░███████╗██╗░░██╗░░██╔══██╗██╔════╝██║░██╔╝░░███████║█████╗░░█████═╝░░░██╔══██║██╔══╝░░██╔═██╗░░░██║░░██║██║░░░░░██║░╚██╗░░╚═╝░░╚═╝╚═╝░░░░░╚═╝░░╚═╝░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "ace":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀█░░█▀▀▀░█▀▀░░░░░░░░░░░░█▀▀▀█░█░░░   █▀▀░░░░░░░░░░░░▀░░░▀░▀▀▀▀░▀▀▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "urmom":
             ascii_art = """\
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░█░█░█▀█░░█▄░▄█░█▀█░█▄░▄█░░█░█░██▀░░█░▀░█░█░█░█░▀░█░░▀▀▀░▀░▀░░▀░░░▀░▀▀▀░▀░░░▀░░░░░░░░░░░░░░░░░░░░░░░░░░░
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "hmmm":
             ascii_art = """\
 ▒▒▒▒▒▒▒▒▒▄▄▄▄▄▄▄▄▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄█▀▀░░░░░░▀▀█▄▒▒▒▒▒▒▒▒▒▒▄█▀▄██▄░░░░░░░░▀█▄▒▒▒▒▒▒▒█▀░▀░░▄▀░░░░▄▀▀▀▀░▀█▒▒▒▒▒█▀░░░░███░░░░▄█▄░░░░▀█▒▒▒▒█░░░░░░▀░░░░░▀█▀░░░░░█▒▒▒▒█░░░░░░░░░░░░░░░░░░░░█▒▒▒▒█░░██▄░░▀▀▀▀▄▄░░░░░░░█▒▒▒▒▀█░█░█░░░▄▄▄▄▄░░░░░░█▀▒▒▒▒▒▀█▀░▀▀▀▀░▄▄▄▀░░░░▄█▀▒▒▒▒▒▒▒█░░░░░░▀█░░░░░▄█▀▒▒▒▒▒▒▒▒▒█▄░░░░░▀█▄▄▄█▀▀▒▒▒▒▒▒▒▒▒▒▒▒▀▀▀▀▀▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         elif text == "lol":
             ascii_art = """\
 ────────────────────────────────────██████───────────██──────█▀▀██▀▀█───██─────██─────██████████──██─────██────▐█■░░██░░░█▌─██─────██────▐█░░░██░░■█▌─██─────██────▐██████████▌─██─────██────▐██████████▌─██─────██────▐██▀████▀██▌─██─────█████──███▄▒▒▄███──█████──█████───███▒▒███───█████───────────▀▀▀▀▀▀────────────────────────────────────
 """
-            # Create a button
-            view = View()
-            button = Button(label="Copy to clipboard", style=discord.ButtonStyle.primary, custom_id="copy_button")
-            view.add_item(button)
 
-            # Button callback
-            async def button_callback(interaction: discord.Interaction):
-                # Send the ASCII art back in a new message so the user can copy it
-                await interaction.response.send_message(f"Here is your ASCII art:\n{ascii_art}")
-
-            button.callback = button_callback
-
-            # Send the ASCII art with the button
-            await interaction.response.send_message(ascii_art, view=view)
+            await interaction.response.send_message(ascii_art)
         else:
             await interaction.response.send_message("Invalid choice!", ephemeral=True)
 
