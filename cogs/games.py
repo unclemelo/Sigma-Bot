@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import random
 
-class MyGroup(app_commands.Group):
+class Games(app_commands.Group):
     def __init__(self):
         super().__init__(name="game", description="Play different games")
 
@@ -31,7 +31,7 @@ class MyGroup(app_commands.Group):
 class Game(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.tree.add_command(MyGroup())
+        self.bot.tree.add_command(Games())
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Game(bot))
