@@ -3,14 +3,28 @@ from discord import app_commands
 from discord.ext import commands
 import random
 
-
 class Games(app_commands.Group):
     def __init__(self):
         super().__init__(name="game", description="Play different games")
 
     @app_commands.command(name="guess", description="Play the guessing game")
     async def guess(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Guess a number between 1 and 10!")
+        number = random.randint(1, 10)
+        await interaction.response.send_message("Guess a number between 1 and 10! Type your guess in the chat.")
+
+        def check(msg):
+            return msg.author == interaction.user and msg.channel == interaction.channel and msg.content.isdigit()
+
+        try:
+            msg = await interaction.client.wait_for("message", check=check, timeout=15)
+            guess = int(msg.content)
+
+            if guess == number:
+                await interaction.followup.send(f"🎉 Correct! The number was {number}.")
+            else:
+                await interaction.followup.send(f"❌ Wrong! The correct number was {number}. Try again!")
+        except:
+            await interaction.followup.send("⏳ Time's up! You didn't guess in time.")
 
     @app_commands.command(name="rps", description="Play rock-paper-scissors")
     async def rps(self, interaction: discord.Interaction, choice: str):
@@ -34,18 +48,15 @@ class Games(app_commands.Group):
         result = random.choice(["Heads", "Tails"])
         await interaction.response.send_message(f"The coin landed on {result}!")
 
-
     @app_commands.command(name="dice", description="Roll a dice!")
     async def dice(self, interaction: discord.Interaction):
         result = random.randint(1, 6)
         await interaction.response.send_message(f"You rolled a {result}!")
 
-
 class Game(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.bot.tree.add_command(Games())  # Register the game group
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Game(bot))
