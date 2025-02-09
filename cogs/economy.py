@@ -97,6 +97,24 @@ class Economy(commands.Cog):
             await interaction.response.send_message(f"You earned ${pay} from your job as a **{job}**.")
 
         self.save_data()
+    
+    @app_commands.command(name="daily", description="Claim your daily coins!")
+    async def daily(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        user_data = self.get_user_data(user_id)
+        last_claim = user_data.get("last_daily")
+
+        if last_claim:
+            last_claim_date = datetime.fromisoformat(last_claim)
+            if last_claim_date.date() == datetime.utcnow().date():
+                await interaction.response.send_message("You've already claimed your daily reward today! Come back tomorrow.")
+                return
+
+        reward = 100
+        user_data["coins"] += reward
+        user_data["last_daily"] = datetime.utcnow().isoformat()
+        self.save_data()
+        await interaction.response.send_message(f"✅ You claimed your daily reward of **${reward}**!")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Economy(bot))
