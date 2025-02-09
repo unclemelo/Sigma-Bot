@@ -50,7 +50,8 @@ class SanvikaQuote(commands.Cog):
                   '"yeah nuts for life bro" - Sanvika 2025',
                   '"bet it was yizhis cream" - Sanvika 2025',
                   '"yeahh I CAN GET HARD GUYS😍" - Sanvika 2025',
-                  '"i get hard at the sight of little kids" - Sanvika 2025'
+                  '"i get hard at the sight of little kids" - Sanvika 2025',
+                  '"bro shut up before i shove this handbook up ur ass" - Sanvika 2025'
                   ]
 
         quote = random.choice(quotes)
