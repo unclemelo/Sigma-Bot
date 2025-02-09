@@ -10,11 +10,11 @@ from datetime import datetime, timedelta
 COINS_FILE = "economy.json"
 
 JOBS = {
-    "Janitor": {"pay_range": (10000, 20000), "cooldown": 50, "required_works": 0},
-    "Cashier": {"pay_range": (15000, 30000), "cooldown": 100, "required_works": 20},
-    "Construction Worker": {"pay_range": (30000, 60000), "cooldown": 150, "required_works": 50},
-    "Software Engineer": {"pay_range": (80000, 150000), "cooldown": 200, "required_works": 100},
-    "Doctor": {"pay_range": (150000, 300000), "cooldown": 300, "required_works": 300}
+    "Janitor": {"pay_range": (10000, 20000), "cooldown": 9000, "required_works": 0},
+    "Cashier": {"pay_range": (15000, 30000), "cooldown": 10000, "required_works": 20},
+    "Construction Worker": {"pay_range": (30000, 60000), "cooldown": 28999, "required_works": 50},
+    "Software Engineer": {"pay_range": (80000, 150000), "cooldown": 40000, "required_works": 100},
+    "Doctor": {"pay_range": (150000, 3000000), "cooldown": 50000, "required_works": 300}
 }
 
 class Economy(commands.Cog):
