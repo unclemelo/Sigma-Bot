@@ -10,11 +10,11 @@ from datetime import datetime, timedelta
 COINS_FILE = "economy.json"
 
 JOBS = {
-    "Janitor": {"pay_range": (10, 20), "cooldown": 5, "required_works": 0},
-    "Cashier": {"pay_range": (15, 30), "cooldown": 10, "required_works": 5},
-    "Construction Worker": {"pay_range": (30, 60), "cooldown": 15, "required_works": 10},
-    "Software Engineer": {"pay_range": (80, 150), "cooldown": 20, "required_works": 20},
-    "Doctor": {"pay_range": (150, 300), "cooldown": 30, "required_works": 30}
+    "Janitor": {"pay_range": (10000, 20000), "cooldown": 50, "required_works": 0},
+    "Cashier": {"pay_range": (15000, 30000), "cooldown": 100, "required_works": 20},
+    "Construction Worker": {"pay_range": (30000, 60000), "cooldown": 150, "required_works": 50},
+    "Software Engineer": {"pay_range": (80000, 150000), "cooldown": 200, "required_works": 100},
+    "Doctor": {"pay_range": (150000, 300000), "cooldown": 300, "required_works": 300}
 }
 
 class Economy(commands.Cog):
@@ -107,8 +107,9 @@ class Economy(commands.Cog):
     async def shop(self, interaction: discord.Interaction):
         items = {
             "Knife": 500,
-            "Pistol": 1500,
-            "Rifle": 5000
+            "Pistol": 15000,
+            "Rifle": 500000,
+            "Nuke": 999999999
         }
         shop_text = "\n".join([f"🔹 **{item}** - ${price}" for item, price in items.items()])
         await interaction.response.send_message(f"🛒 **Shop:**\n{shop_text}")
@@ -121,7 +122,8 @@ class Economy(commands.Cog):
         shop_items = {
             "Knife": 500,
             "Pistol": 1500,
-            "Rifle": 5000
+            "Rifle": 500000,
+            "Nuke": 999999999
         }
 
         item = item.capitalize()
