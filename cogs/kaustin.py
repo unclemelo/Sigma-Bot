@@ -5,7 +5,7 @@ from functools import wraps
 from discord.ext import commands
 
 ## Developer IDs ##
-devs = {1268070879598870601, 1331452332688543815}  ## Replace with all the discord ids of bot Admins
+devs = {1268070879598870601, 1331452332688543815, 794379211812110376}  ## Replace with all the discord ids of bot Admins
 ###################
 
 def is_dev():
