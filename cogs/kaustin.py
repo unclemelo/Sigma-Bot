@@ -47,4 +47,4 @@ class kaustinQuote(commands.Cog):
 
 async def setup(bot: commands.Bot):
     """Adds the Updater cog to the bot."""
-    await bot.add_cog(SanvikaQuote(bot))
+    await bot.add_cog(kaustinQuote(bot))
