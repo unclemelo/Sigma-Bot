@@ -27,15 +27,14 @@ class Economy(commands.Cog):
         if os.path.exists(COINS_FILE):
             try:
                 with open(COINS_FILE, "r") as f:
-                    content = f.read().strip()  # Remove any trailing spaces or newlines
+                    content = f.read().strip()
                     self.economy_data = json.loads(content) if content else {}
             except json.JSONDecodeError:
                 print("Error: economy.json is corrupted. Resetting file.")
                 self.economy_data = {}
-                self.save_data()  # Reset the file
+                self.save_data()
         else:
             self.economy_data = {}
-
 
     def save_data(self):
         """Save economy data to a JSON file."""
@@ -46,8 +45,27 @@ class Economy(commands.Cog):
         """Retrieve user data or create default if missing."""
         user_id = str(user_id)
         if user_id not in self.economy_data:
-            self.economy_data[user_id] = {"coins": 0, "job": "Janitor", "works_done": 0, "last_work_time": None, "last_daily": None}
+            self.economy_data[user_id] = {"coins": 0, "bank": 0, "job": "Janitor", "works_done": 0, "last_work_time": None, "last_daily": None}
         return self.economy_data[user_id]
+
+    @app_commands.command(name="deposit", description="Deposit money into your bank")
+    async def deposit(self, interaction: discord.Interaction, amount: int):
+        user_id = str(interaction.user.id)
+        user_data = self.get_user_data(user_id)
+
+        if amount <= 0:
+            await interaction.response.send_message("❌ You can't deposit a negative or zero amount.")
+            return
+
+        if user_data["coins"] < amount:
+            await interaction.response.send_message("❌ You don't have enough money to deposit that much.")
+            return
+
+        user_data["coins"] -= amount
+        user_data["bank"] += amount
+        self.save_data()
+
+        await interaction.response.send_message(f"✅ You deposited **${amount}** into your bank. Your new bank balance is **${user_data['bank']}**.")
 
     @app_commands.command(name="work", description="Work a job to earn coins")
     async def work(self, interaction: discord.Interaction):
@@ -70,7 +88,6 @@ class Economy(commands.Cog):
         user_data["works_done"] += 1
         user_data["last_work_time"] = datetime.utcnow().isoformat()
 
-        # Check if user can unlock a new job
         for new_job, details in JOBS.items():
             if user_data["works_done"] >= details["required_works"] and details["required_works"] > JOBS[job]["required_works"]:
                 user_data["job"] = new_job
@@ -80,85 +97,6 @@ class Economy(commands.Cog):
             await interaction.response.send_message(f"You earned ${pay} from your job as a **{job}**.")
 
         self.save_data()
-
-    @app_commands.command(name="balance", description="Check your balance")
-    async def balance(self, interaction: discord.Interaction):
-        user_data = self.get_user_data(interaction.user.id)
-        await interaction.response.send_message(f"💰 You have **${user_data['coins']}**.")
-
-    @app_commands.command(name="leaderboard", description="Check the top earners")
-    async def leaderboard(self, interaction: discord.Interaction):
-        sorted_users = sorted(self.economy_data.items(), key=lambda x: x[1]["coins"], reverse=True)
-        leaderboard_text = "\n".join([f"{i+1}. <@{user_id}> - ${data['coins']}" for i, (user_id, data) in enumerate(sorted_users[:10])])
-        await interaction.response.send_message(f"🏆 **Leaderboard:**\n{leaderboard_text}")
-
-    @app_commands.command(name="daily", description="Claim your daily coins!")
-    async def daily(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
-        user_data = self.get_user_data(user_id)
-        last_claim = user_data.get("last_daily")
-
-        if last_claim:
-            last_claim_date = datetime.fromisoformat(last_claim)
-            if last_claim_date.date() == datetime.utcnow().date():
-                await interaction.response.send_message("You've already claimed your daily reward today! Come back tomorrow.")
-                return
-
-        reward = 100
-        user_data["coins"] += reward
-        user_data["last_daily"] = datetime.utcnow().isoformat()
-        self.save_data()
-        await interaction.response.send_message(f"✅ You claimed your daily reward of **${reward}**!")
-
-    @app_commands.command(name="shop", description="View the shop and buy items!")
-    async def shop(self, interaction: discord.Interaction):
-        items = {
-            "Knife": 500,
-            "Pistol": 15000,
-            "Rifle": 500000,
-            "Nuke": 999999999
-        }
-        shop_text = "\n".join([f"🔹 **{item}** - ${price}" for item, price in items.items()])
-        await interaction.response.send_message(f"🛒 **Shop:**\n{shop_text}")
-
-    @app_commands.command(name="buy", description="Buy an item from the shop")
-    async def buy(self, interaction: discord.Interaction, item: str):
-        user_id = str(interaction.user.id)
-        user_data = self.get_user_data(user_id)
-
-        shop_items = {
-            "Knife": 500,
-            "Pistol": 1500,
-            "Rifle": 500000,
-            "Nuke": 999999999
-        }
-
-        item = item.capitalize()
-        if item not in shop_items:
-            await interaction.response.send_message("That item is not available in the shop!")
-            return
-
-        price = shop_items[item]
-        if user_data["coins"] < price:
-            await interaction.response.send_message("You don't have enough money for that!")
-            return
-
-        user_data["coins"] -= price
-        user_data.setdefault("inventory", []).append(item)
-        self.save_data()
-        await interaction.response.send_message(f"✅ You bought a **{item}** for **${price}**!")
-
-    @app_commands.command(name="inventory", description="Check your inventory")
-    async def inventory(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
-        user_data = self.get_user_data(user_id)
-        inventory = user_data.get("inventory", [])
-
-        if not inventory:
-            await interaction.response.send_message("Your inventory is empty!")
-        else:
-            inventory_list = ", ".join(inventory)
-            await interaction.response.send_message(f"👜 **Your Inventory:** {inventory_list}")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Economy(bot))
