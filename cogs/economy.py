@@ -25,10 +25,17 @@ class Economy(commands.Cog):
     def load_data(self):
         """Load economy data from a JSON file."""
         if os.path.exists(COINS_FILE):
-            with open(COINS_FILE, "r") as f:
-                self.economy_data = json.load(f)
+            try:
+                with open(COINS_FILE, "r") as f:
+                    content = f.read().strip()  # Remove any trailing spaces or newlines
+                    self.economy_data = json.loads(content) if content else {}
+            except json.JSONDecodeError:
+                print("Error: economy.json is corrupted. Resetting file.")
+                self.economy_data = {}
+                self.save_data()  # Reset the file
         else:
             self.economy_data = {}
+
 
     def save_data(self):
         """Save economy data to a JSON file."""
