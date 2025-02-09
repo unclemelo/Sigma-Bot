@@ -7,9 +7,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-# Get the directory of the current script
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-COINS_FILE = os.path.join(BASE_DIR, "economy.json")
+COINS_FILE = "economy.json"
 
 JOBS = {
     "Janitor": {"pay_range": (10000, 20000), "cooldown": 50, "required_works": 0},
@@ -27,10 +25,17 @@ class Economy(commands.Cog):
     def load_data(self):
         """Load economy data from a JSON file."""
         if os.path.exists(COINS_FILE):
-            with open(COINS_FILE, "r") as f:
-                self.economy_data = json.load(f)
+            try:
+                with open(COINS_FILE, "r") as f:
+                    content = f.read().strip()  # Remove any trailing spaces or newlines
+                    self.economy_data = json.loads(content) if content else {}
+            except json.JSONDecodeError:
+                print("Error: economy.json is corrupted. Resetting file.")
+                self.economy_data = {}
+                self.save_data()  # Reset the file
         else:
             self.economy_data = {}
+
 
     def save_data(self):
         """Save economy data to a JSON file."""
@@ -104,6 +109,56 @@ class Economy(commands.Cog):
         user_data["last_daily"] = datetime.utcnow().isoformat()
         self.save_data()
         await interaction.response.send_message(f"✅ You claimed your daily reward of **${reward}**!")
+
+    @app_commands.command(name="shop", description="View the shop and buy items!")
+    async def shop(self, interaction: discord.Interaction):
+        items = {
+            "Knife": 500,
+            "Pistol": 15000,
+            "Rifle": 500000,
+            "Nuke": 999999999
+        }
+        shop_text = "\n".join([f"🔹 **{item}** - ${price}" for item, price in items.items()])
+        await interaction.response.send_message(f"🛒 **Shop:**\n{shop_text}")
+
+    @app_commands.command(name="buy", description="Buy an item from the shop")
+    async def buy(self, interaction: discord.Interaction, item: str):
+        user_id = str(interaction.user.id)
+        user_data = self.get_user_data(user_id)
+
+        shop_items = {
+            "Knife": 500,
+            "Pistol": 1500,
+            "Rifle": 500000,
+            "Nuke": 999999999
+        }
+
+        item = item.capitalize()
+        if item not in shop_items:
+            await interaction.response.send_message("That item is not available in the shop!")
+            return
+
+        price = shop_items[item]
+        if user_data["coins"] < price:
+            await interaction.response.send_message("You don't have enough money for that!")
+            return
+
+        user_data["coins"] -= price
+        user_data.setdefault("inventory", []).append(item)
+        self.save_data()
+        await interaction.response.send_message(f"✅ You bought a **{item}** for **${price}**!")
+
+    @app_commands.command(name="inventory", description="Check your inventory")
+    async def inventory(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        user_data = self.get_user_data(user_id)
+        inventory = user_data.get("inventory", [])
+
+        if not inventory:
+            await interaction.response.send_message("Your inventory is empty!")
+        else:
+            inventory_list = ", ".join(inventory)
+            await interaction.response.send_message(f"👜 **Your Inventory:** {inventory_list}")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Economy(bot))
