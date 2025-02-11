@@ -160,5 +160,86 @@ class Gamble(commands.Cog):
         
         self.save_data()
 
+    @app_commands.command(name="blackjack", description="Play Blackjack with coins")
+    async def blackjack(self, interaction: discord.Interaction, bet: int):
+        user_id = str(interaction.user.id)
+        user_data = self.get_user_data(user_id)
+
+        if bet <= 0:
+            await interaction.response.send_message("❌ You must bet a positive amount of coins.")
+            return
+
+        if user_data["coins"] < bet:
+            await interaction.response.send_message("❌ You don't have enough coins to place this bet.")
+            return
+
+        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # Simplified deck with face cards as 10
+        random.shuffle(deck)
+
+        def draw():
+            return deck.pop()
+
+        player_hand = [draw(), draw()]
+        dealer_hand = [draw(), draw()]
+
+        def hand_value(hand):
+            value = sum(hand)
+            if value > 21 and 11 in hand:
+                hand[hand.index(11)] = 1
+                value = sum(hand)
+            return value
+
+        await interaction.response.send_message(
+            f"Your hand: {player_hand} (Value: {hand_value(player_hand)})\n"
+            f"Dealer's hand: [{dealer_hand[0]}, X] (Value: {dealer_hand[0]})"
+        )
+
+        def check(msg):
+            return msg.author == interaction.user and msg.channel == interaction.channel and msg.content.lower() in ['hit', 'stand']
+
+        while hand_value(player_hand) < 21:
+            try:
+                msg = await interaction.client.wait_for("message", check=check, timeout=30.0)
+                if msg.content.lower() == 'hit':
+                    player_hand.append(draw())
+                    await interaction.followup.send(f"You hit! Your hand: {player_hand} (Value: {hand_value(player_hand)})")
+                    if hand_value(player_hand) >= 21:
+                        break
+                else:
+                    break
+            except:
+                await interaction.followup.send("Time's up! You stand.")
+                break
+
+        player_value = hand_value(player_hand)
+        if player_value > 21:
+            await interaction.followup.send(f"Bust! Your hand value: {player_value}. You lost **${bet}**.")
+            user_data["coins"] -= bet
+        else:
+            while hand_value(dealer_hand) < 17:
+                dealer_hand.append(draw())
+            
+            dealer_value = hand_value(dealer_hand)
+            await interaction.followup.send(
+                f"Your hand: {player_hand} (Value: {player_value})\n"
+                f"Dealer's hand: {dealer_hand} (Value: {dealer_value})"
+            )
+
+            if dealer_value > 21:
+                winnings = bet * 2
+                user_data["coins"] += winnings
+                await interaction.followup.send(f"Dealer busts! You win **${winnings}**!")
+            elif player_value > dealer_value:
+                winnings = bet * 2
+                user_data["coins"] += winnings
+                await interaction.followup.send(f"You win! You won **${winnings}**!")
+            elif player_value < dealer_value:
+                user_data["coins"] -= bet
+                await interaction.followup.send(f"Dealer wins! You lost **${bet}**.")
+            else:
+                await interaction.followup.send("It's a push! Your bet is returned.")
+        
+        self.save_data()
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Gamble(bot))
