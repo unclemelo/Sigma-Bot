@@ -173,73 +173,98 @@ class Gamble(commands.Cog):
             await interaction.response.send_message("❌ You don't have enough coins to place this bet.")
             return
 
-        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # Simplified deck with face cards as 10
+        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # Simplified deck with Aces as 11
         random.shuffle(deck)
 
-        def draw():
-            return deck.pop()
-
-        player_hand = [draw(), draw()]
-        dealer_hand = [draw(), draw()]
+        player_hand = [deck.pop(), deck.pop()]
+        dealer_hand = [deck.pop(), deck.pop()]
 
         def hand_value(hand):
+            # Adjust Aces value
             value = sum(hand)
-            if value > 21 and 11 in hand:
-                hand[hand.index(11)] = 1
-                value = sum(hand)
+            ace_count = hand.count(11)
+            while value > 21 and ace_count:
+                value -= 10
+                ace_count -= 1
             return value
 
-        await interaction.response.send_message(
-            f"Your hand: {player_hand} (Value: {hand_value(player_hand)})\n"
-            f"Dealer's hand: [{dealer_hand[0]}, X] (Value: {dealer_hand[0]})"
-        )
-
-        def check(msg):
-            return msg.author == interaction.user and msg.channel == interaction.channel and msg.content.lower() in ['hit', 'stand']
-
-        while hand_value(player_hand) < 21:
-            try:
-                msg = await interaction.client.wait_for("message", check=check, timeout=30.0)
-                if msg.content.lower() == 'hit':
-                    player_hand.append(draw())
-                    await interaction.followup.send(f"You hit! Your hand: {player_hand} (Value: {hand_value(player_hand)})")
-                    if hand_value(player_hand) >= 21:
-                        break
-                else:
-                    break
-            except:
-                await interaction.followup.send("Time's up! You stand.")
-                break
-
-        player_value = hand_value(player_hand)
-        if player_value > 21:
-            await interaction.followup.send(f"Bust! Your hand value: {player_value}. You lost **${bet}**.")
-            user_data["coins"] -= bet
-        else:
-            while hand_value(dealer_hand) < 17:
-                dealer_hand.append(draw())
+        async def create_embed(player_hand, dealer_hand, show_dealer=False):
+            embed = discord.Embed(title="Blackjack", color=discord.Color.green())
             
-            dealer_value = hand_value(dealer_hand)
-            await interaction.followup.send(
-                f"Your hand: {player_hand} (Value: {player_value})\n"
-                f"Dealer's hand: {dealer_hand} (Value: {dealer_value})"
-            )
-
-            if dealer_value > 21:
-                winnings = bet * 2
-                user_data["coins"] += winnings
-                await interaction.followup.send(f"Dealer busts! You win **${winnings}**!")
-            elif player_value > dealer_value:
-                winnings = bet * 2
-                user_data["coins"] += winnings
-                await interaction.followup.send(f"You win! You won **${winnings}**!")
-            elif player_value < dealer_value:
-                user_data["coins"] -= bet
-                await interaction.followup.send(f"Dealer wins! You lost **${bet}**.")
+            player_cards = [f"cards/{card if card != 11 else 'A'}.png" for card in player_hand]
+            dealer_cards = [f"cards/{dealer_hand[0] if dealer_hand[0] != 11 else 'A'}.png"] if not show_dealer else [f"cards/{card if card != 11 else 'A'}.png" for card in dealer_hand]
+            
+            embed.add_field(name="Your Hand", value=f"Value: {hand_value(player_hand)}", inline=False)
+            embed.set_image(url=player_cards[0])  # Placeholder for showing one card image
+            
+            if show_dealer:
+                embed.add_field(name="Dealer's Hand", value=f"Value: {hand_value(dealer_hand)}", inline=False)
+                embed.set_thumbnail(url=dealer_cards[0])  # Placeholder for dealer's card
             else:
-                await interaction.followup.send("It's a push! Your bet is returned.")
-        
-        self.save_data()
+                embed.add_field(name="Dealer's Hand", value="Value: ?", inline=False)
+                embed.set_thumbnail(url="cards/back.png")  # Assuming you have a back card image
+
+            return embed
+
+        class BlackjackView(discord.ui.View):
+            def __init__(self, player_hand, dealer_hand, deck, bet, user_data, interaction):
+                super().__init__()
+                self.player_hand = player_hand
+                self.dealer_hand = dealer_hand
+                self.deck = deck
+                self.bet = bet
+                self.user_data = user_data
+                self.interaction = interaction
+
+            @discord.ui.button(label="Hit", style=discord.ButtonStyle.green)
+            async def hit(self, button: discord.ui.Button, interaction: discord.Interaction):
+                new_card = self.deck.pop()
+                self.player_hand.append(new_card)
+                if hand_value(self.player_hand) > 21:
+                    await self.end_game(interaction, "bust")
+                    return
+
+                embed = await create_embed(self.player_hand, self.dealer_hand)
+                await interaction.response.edit_message(embed=embed, view=self)
+
+            @discord.ui.button(label="Stand", style=discord.ButtonStyle.red)
+            async def stand(self, button: discord.ui.Button, interaction: discord.Interaction):
+                await self.end_game(interaction, "stand")
+
+            async def end_game(self, interaction, reason):
+                if reason == "bust":
+                    message = f"Bust! You lost **${self.bet}**."
+                    self.user_data["coins"] -= self.bet
+                else:
+                    while hand_value(self.dealer_hand) < 17:
+                        new_card = self.deck.pop()
+                        self.dealer_hand.append(new_card)
+                        if hand_value(self.dealer_hand) > 21:
+                            break
+
+                    dealer_value = hand_value(self.dealer_hand)
+                    player_value = hand_value(self.player_hand)
+
+                    if dealer_value > 21:
+                        message = f"Dealer busts! You win **${self.bet * 2}**!"
+                        self.user_data["coins"] += self.bet * 2
+                    elif player_value > dealer_value:
+                        message = f"You win! You won **${self.bet * 2}**!"
+                        self.user_data["coins"] += self.bet * 2
+                    elif player_value < dealer_value:
+                        message = f"Dealer wins! You lost **${self.bet}**."
+                        self.user_data["coins"] -= self.bet
+                    else:
+                        message = "It's a push! Your bet is returned."
+
+                embed = await create_embed(self.player_hand, self.dealer_hand, show_dealer=True)
+                embed.description = message
+                await interaction.response.edit_message(embed=embed, view=None)
+                self.save_data()
+
+        initial_embed = await create_embed(player_hand, dealer_hand)
+        view = BlackjackView(player_hand, dealer_hand, deck, bet, user_data, interaction)
+        await interaction.response.send_message(embed=initial_embed, view=view)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Gamble(bot))
