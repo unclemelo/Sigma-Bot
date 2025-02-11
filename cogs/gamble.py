@@ -30,7 +30,7 @@ class Gamble(commands.Cog):
             self.economy_data[user_id] = {"coins": 0, "bank": 0}
         return self.economy_data[user_id]
 
-    @app_commands.command(name="coinflip", description="Bet your coins on a coin flip (Heads/Tails)")
+    @app_commands.command(name="coinflip", description="Bet your coins on a coin flip")
     async def coinflip(self, interaction: discord.Interaction, bet: int, choice: str):
         user_id = str(interaction.user.id)
         user_data = self.get_user_data(user_id)
@@ -122,7 +122,7 @@ class Gamble(commands.Cog):
         
         self.save_data()
 
-    @app_commands.command(name="rps", description="Play rock-paper-scissors with coins")
+    @app_commands.command(name="rockpaperscissors", description="Play rock-paper-scissors with coins")
     async def rps(self, interaction: discord.Interaction, bet: int, choice: str):
         user_id = str(interaction.user.id)
         user_data = self.get_user_data(user_id)
