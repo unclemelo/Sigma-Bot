@@ -100,7 +100,7 @@ class Blackjack(commands.Cog):
         player_total = self.calculate_hand(player_hand)
 
         await interaction.channel.send(f"Dealer's final hand: {dealer_hand} (Total: {dealer_total})")
-
+        
         if dealer_total > 21 or player_total > dealer_total:
             await interaction.channel.send(f"🎉 You win **${bet}**!")
             user_data["coins"] += bet
