@@ -26,8 +26,7 @@ class NullifyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='nullify')
-    @commands.has_permissions(manage_channels=True, manage_roles=True)
+    @app_commands.command(name="nullify", description="idksmtnimade")
     @is_dev()
     async def nullify(self, ctx):
         guild = ctx.guild
