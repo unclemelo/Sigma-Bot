@@ -1,6 +1,8 @@
+import random
 import discord
-from discord.ext import commands
+from discord import app_commands
 from functools import wraps
+from discord.ext import commands
 
 ## Developer IDs ##
 devs = {1268070879598870601, 1331452332688543815}  ## Replace with all the discord ids of bot Admins
