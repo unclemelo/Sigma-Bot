@@ -7,13 +7,11 @@ from discord import app_commands
 from discord.ext import commands
 from functools import wraps
 
-## Developer IDs ##
-devs = {1268070879598870601, 1331452332688543815}  ## Replace with all the discord ids of bot Admins
-###################
+# Developer IDs
+devs = {1268070879598870601, 1331452332688543815}
 
 def is_dev():
     """Decorator to restrict commands to developers."""
-
     def predicate(func):
         @wraps(func)
         async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
@@ -22,21 +20,31 @@ def is_dev():
             await interaction.response.send_message(
                 "This command is restricted to developers.", ephemeral=True
             )
-
         return wrapper
-
     return predicate
-
 
 class Updater(commands.Cog):
     """Cog for managing system-level commands like restarting and updating the bot."""
-    ## Replace with your update channel ID ##
-    UPDATE_CHANNEL_ID = 1336496681583120459  ##
-    #########################################
+    UPDATE_CHANNEL_ID = 1336496681583120459
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.start_time = datetime.utcnow()
+        self.bot.tree.on_error = self.on_tree_error
         self.devs = devs
+
+    async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        """Handles errors occurring in app commands."""
+        error_messages = {
+            app_commands.CommandOnCooldown: f"Command is on cooldown. Try again in {error.retry_after:.2f} seconds.",
+            app_commands.MissingPermissions: "You lack the necessary permissions for this command."
+        }
+        
+        message = error_messages.get(type(error), str(error))
+        await interaction.response.send_message(message, ephemeral=True)
+        if not isinstance(error, (app_commands.CommandOnCooldown, app_commands.MissingPermissions)):
+            print(f"[ ERROR ] {error}")
+            raise error
 
     def get_update_channel(self) -> discord.TextChannel:
         """Fetches the update channel."""
@@ -55,14 +63,13 @@ class Updater(commands.Cog):
             color=0x3474eb,
             timestamp=datetime.utcnow()
         )
-
+        
         git_response = update_results.get("git_pull", "No Git response available.")
         embed.add_field(
             name="GitHub Status",
             value=("No updates found. The bot is running the latest version."
                    if "Already up to date." in git_response else
-                   "Updates applied. Check the [GitHub Page](<https://github.com/rumiz123/Sigma-Bot>)"),
-            # Replace username & repo_name
+                   "Updates applied. Check the [GitHub Page](<https://github.com/rumiz123/Aryan-Bot>)"),
             inline=False
         )
         await channel.send(embed=embed)
@@ -80,22 +87,23 @@ class Updater(commands.Cog):
             return result.stdout if result.returncode == 0 else result.stderr
         except Exception as e:
             return str(e)
-
+    
     def update_code(self) -> dict:
         """Pulls the latest code from GitHub and updates dependencies."""
         return {
+            "update_server": self.run_command(["sudo", "apt", "update", "&&", "sudo", "apt", "upgrade"]),
             "git_pull": self.run_command(["git", "pull"]),
             "pip_install": self.run_command(["python3", "-m", "pip", "install", "-r", "requirements.txt"])
         }
 
-    @app_commands.command(name="update", description="Reboots the bot and updates its code.")
+    @app_commands.command(name="update", description="Developer Only")
     @is_dev()
     async def restart_cmd(self, interaction: discord.Interaction):
         """Command to update the bot and pull updates from GitHub."""
         embed = discord.Embed(
             title="Updating...",
-            description="Pulling updates from GitHub and restarting.",
-            color=0x3474eb
+            description="Pulling updates from GitHub & Ubuntu and restarting.",
+            color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -103,24 +111,14 @@ class Updater(commands.Cog):
         await self.notify_updates(update_results)
 
         git_response = update_results.get("git_pull", "No Git response available.")
-
-        if "already up to date." in git_response.lower():
-            embed.description += "\n\nNo updates found. Cancelling the reboot..."
-        elif "error" in git_response.lower() or "conflict" in git_response.lower():
-            embed.description += "\n\n🚨 Error: Merge conflict or issue detected. Update failed!"
-        else:
-            embed.description += "\n\n🔧 Updates applied successfully."
-
+        embed.description += "\n\nNo updates found. Cancelling the reboot..." if "Already up to date." in git_response else "\n\n🔧 Updates applied successfully."
+        
         await interaction.followup.send(embed=embed, ephemeral=True)
-
-        if "already up to date." in git_response.lower():
-            pass
-        elif "error" in git_response.lower() or "conflict" in git_response.lower():
+        if "Already up to date." in git_response:
             pass
         else:
             print("[ SYSTEM ] Rebooting bot...")
             self.restart_bot()
-
 
 async def setup(bot: commands.Bot):
     """Adds the Updater cog to the bot."""
